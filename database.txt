@@ -1,0 +1,8 @@
+CREATE TABLE task
+    (
+        id SERIAL NOT NULL,
+        task character varying(255) NOT NULL,
+        complete BOOLEAN NOT NULL,
+        deleted BOOLEAN NOT NULL,
+        CONSTRAINT task_pkey PRIMARY KEY (id)
+    );
