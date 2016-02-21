@@ -1,6 +1,8 @@
+var values = {};
+
 $(document).ready(function() {
     $('#submit-button').on('click', postData);
-    console.log("Ready!");
+    $('#task-output').on('click', '.checkbox', taskComplete);
 
     getData();
 });
@@ -35,7 +37,7 @@ function postData() {
 }
 
 function getData() {
-    $('.task-data').remove();
+    $('.task').remove();
     $.ajax({
         type: 'GET',
         url: '/task',
@@ -50,6 +52,33 @@ function sendToDom(taskData){
 
         var tsk = taskData[task];
 
-        $('#task-table').append('<tr class="task-data"><td>' + tsk.task + '</td><td>' + tsk.complete + '</td></tr>');
+        $('#task-output').append('<div class="task"><form id="task-complete"><input class="checkbox" type="checkbox" data-id="' + tsk.id + '">' + tsk.task + '</form></div>');
     }
 }
+
+function taskComplete() {
+    console.log("The complete click works!");
+
+    values.id = $(this).data('id');
+    console.log(values);
+
+
+
+    $.ajax({
+        type: 'POST',
+        url: '/complete',
+        data: values,
+        success: function(data) {
+            if(data) {
+                // everything went ok
+                console.log('from server:', data);
+                getData();
+            } else {
+                console.log('error');
+            }
+        }
+    });
+}
+
+
+

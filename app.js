@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.get('/task', function(req, res) {
     var results = [];
     pg.connect(connectionString, function(err, client, done) {
-        var query = client.query('SELECT * FROM task ORDER BY id ASC;');
+        var query = client.query('SELECT * FROM task ORDER BY complete, id ASC;');
 
         // Stream results back one row at a time
         query.on('row', function(row) {
@@ -55,7 +55,28 @@ app.post('/task', function(req, res) {
                 }
             });
     });
+});
 
+app.post('/complete', function(req, res) {
+    var updateTask = {
+        id: req.body.id
+    };
+    console.log("I'm getting here");
+    console.log(req.body.id);
+
+    pg.connect(connectionString, function(err, client, done) {
+        client.query("UPDATE task SET complete = NOT complete WHERE id = ($1) RETURNING id",
+            [updateTask.id],
+            function (err, result) {
+                done();
+                if(err) {
+                    console.log("Error inserting data: ", err);
+                    res.send(false);
+                } else {
+                    res.send(result);
+                }
+            });
+    });
 });
 
 app.get('/*', function(req, res) {
